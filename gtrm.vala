@@ -8,6 +8,7 @@ class MainWindow : Gtk.Window {
 	public string[]        trm_args;
 	public string          dims          = "85x20";
 	public bool            transparent   = false;
+	public bool            oncursor      = false;
 	public bool            stay          = true;
 	public bool            floating      = false;
 	public Vte.CursorShape cursor        = Vte.CursorShape.BLOCK;
@@ -26,10 +27,6 @@ class MainWindow : Gtk.Window {
 	}
 
 	public void build() {
-		this.destroy.connect(Gtk.main_quit);
-		this.key_press_event.connect(this.on_key_press);
-		this.focus_out_event.connect(this.on_focus_out);
-
 		// load font from env
 		var font = GLib.Environment.get_variable("FONT_SIZE");
 		if (font != null && font.length > 0) {
@@ -58,7 +55,6 @@ class MainWindow : Gtk.Window {
 		// terminal
 		this.trm = new Vte.Terminal();
 		box.pack_start(this.trm, true, true, 0);
-
 		this.trm.bold_is_bright      = true;
 		this.trm.enable_bidi         = false;
 		this.trm.enable_sixel        = true;
@@ -105,11 +101,23 @@ class MainWindow : Gtk.Window {
 			stderr.printf("Failed loading CSS\n");
 		}
 
+		// signals
+		this.destroy.connect(Gtk.main_quit);
+		this.key_press_event.connect(this.on_key_press);
+		this.focus_out_event.connect(this.on_focus_out);
 		this.trm.child_exited.connect(Gtk.main_quit);
 		this.trm.window_title_changed.connect(() => this.title = this.trm.window_title);
 
+		// size
 		string[] sp = this.dims.split("x");
 		this.trm.set_size(int.parse(sp[0]), int.parse(sp[1]));
+
+		// location
+		if (this.oncursor) {
+			this.window_position = Gtk.WindowPosition.MOUSE;
+		} else {
+			this.window_position = Gtk.WindowPosition.CENTER;
+		}
 	}
 
 	private bool on_key_press(Gtk.Widget self, Gdk.EventKey ev) {
@@ -118,29 +126,30 @@ class MainWindow : Gtk.Window {
         var shift = (ev.state & Gdk.ModifierType.SHIFT_MASK)   != 0;
 
 		if (k == Gdk.Key.Escape && !this.stay) {
+			// quit
 			Gtk.main_quit();
 			return true;
 
 		} else if ((k == Gdk.Key.Page_Up && ctrl && shift) ||
 				   (k == Gdk.Key.plus && ctrl)) {
+			// zoom in
 			this.font_size_cur += 1;
 			this.set_font();
 			return true;
 
 		} else if ((k == Gdk.Key.Page_Down && ctrl && shift) ||
 				   (k == Gdk.Key.minus && ctrl)) {
+			// zoom out
 			this.font_size_cur -= 1;
 			this.set_font();
 			return true;
 
 		} else if (k == Gdk.Key.equal && ctrl) {
+			// zoom reset
 			this.font_size_cur = this.font_size;
 			this.set_font();
 			return true;
 
-		} else if (k == Gdk.Key.backslash && ctrl && shift) {
-			this.trm.enable_bidi = !this.trm.enable_bidi;
-			return true;
 		}
 
 		return false;
@@ -184,11 +193,14 @@ void args_help(string[] args) {
 	print("usage: %s [OPTION]...\n", args[0]);
 	print("\n");
 	print("Options:\n");
-	print("  -d, --dims STR    terminal dimensions in characters\n");
-	print("  -p, --pop STR     pop up window\n");
-	print("  -s, --sh STR      run commands in /bin/sh -c\n");
-	print("  -e [ARG]...       run commands in args\n");
-	print("      --help        show this help\n");
+	print("  -d, --dims STR     terminal dimensions in characters\n");
+	print("  -f, --float        floating window\n");
+	print("  -c, --oncursor     floating window located at the current mouse position\n");
+	print("  -t, --transparent  transparent window\n");
+	print("  -p, --pop STR      pop up window\n");
+	print("  -s, --sh STR       run commands in /bin/sh -c\n");
+	print("  -e [ARG]...        run commands in args\n");
+	print("      --help         show this help\n");
 }
 
 bool args_parse(MainWindow win, string[] args) {
@@ -197,6 +209,17 @@ bool args_parse(MainWindow win, string[] args) {
 		case "--dims":
 		case "-d":
 			win.dims = args[++i];
+			break;
+
+		case "--float":
+		case "-f":
+			win.floating = true;
+			break;
+
+		case "--oncursor":
+		case "-c":
+			win.floating = true;
+			win.oncursor = true;
 			break;
 
 		case "--pop":
@@ -209,6 +232,7 @@ bool args_parse(MainWindow win, string[] args) {
 			break;
 
 		case "--transparent":
+		case "-t":
 			win.transparent = true;
 			break;
 
