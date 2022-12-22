@@ -73,21 +73,21 @@ class MainWindow : Gtk.Window {
 		fg.parse("#ffffff");
 		bg.parse("#000000");
 		palette[ 0].parse("#000000");
-		palette[ 1].parse("#a80000");
-		palette[ 2].parse("#00a800");
-		palette[ 3].parse("#a85400");
-		palette[ 4].parse("#0000a8");
-		palette[ 5].parse("#a800a8");
-		palette[ 6].parse("#00a8a8");
-		palette[ 7].parse("#a8a8a8");
-		palette[ 8].parse("#545454");
-		palette[ 9].parse("#fc5454");
-		palette[10].parse("#54fc54");
-		palette[11].parse("#fcfc54");
-		palette[12].parse("#5454fc");
-		palette[13].parse("#fc54fc");
-		palette[14].parse("#54fcfc");
-		palette[15].parse("#fcfcfc");
+		palette[ 1].parse("#b90101");
+		palette[ 2].parse("#01b901");
+		palette[ 3].parse("#b9b901");
+		palette[ 4].parse("#0101d7");
+		palette[ 5].parse("#b901b9");
+		palette[ 6].parse("#01b9b9");
+		palette[ 7].parse("#cfcfcf");
+		palette[ 8].parse("#747474");
+		palette[ 9].parse("#e60101");
+		palette[10].parse("#01e601");
+		palette[11].parse("#e6e601");
+		palette[12].parse("#5454e6");
+		palette[13].parse("#e601e6");
+		palette[14].parse("#01e6e6");
+		palette[15].parse("#e6e6e6");
 		this.trm.set_colors(fg, bg, palette);
 
 		// css
