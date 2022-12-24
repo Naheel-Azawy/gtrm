@@ -150,9 +150,14 @@ class MainWindow : Gtk.Window {
 			this.set_font();
 			return true;
 
+		} else if (k == Gdk.Key.H && ctrl) {
+			// copy html
+			this.trm.copy_clipboard_format(Vte.Format.HTML);
+			return true;
+
 		} else if (k == Gdk.Key.C && ctrl) {
 			// copy
-			this.trm.copy_clipboard_format(Vte.Format.HTML);
+			this.trm.copy_clipboard_format(Vte.Format.TEXT);
 			return true;
 
 		} else if (k == Gdk.Key.V && ctrl) {
