@@ -11,6 +11,7 @@ class MainWindow : Gtk.Window {
 	public bool            oncursor      = false;
 	public bool            stay          = true;
 	public bool            floating      = false;
+	public bool            bidi          = false;
 	public Vte.CursorShape cursor        = Vte.CursorShape.BLOCK;
 	public string          font_name     = "monospace";
 	public float           font_size     = 12;
@@ -56,7 +57,7 @@ class MainWindow : Gtk.Window {
 		this.trm = new Vte.Terminal();
 		box.pack_start(this.trm, true, true, 0);
 		this.trm.bold_is_bright      = true;
-		this.trm.enable_bidi         = false;
+		this.trm.enable_bidi         = this.bidi;
 		this.trm.enable_sixel        = true;
 		this.trm.cursor_shape        = this.cursor; // BLOCK, IBEAM, UNDERLINE
 		this.trm.cursor_blink_mode   = Vte.CursorBlinkMode.OFF; // SYSTEM, ON, OFF
@@ -210,6 +211,7 @@ void args_help(string[] args) {
 	print("Options:\n");
 	print("  -d, --dims STR     terminal dimensions in characters\n");
 	print("  -f, --float        floating window\n");
+	print("  -b, --bidi         enable bidi\n");
 	print("  -c, --oncursor     floating window located at the current mouse position\n");
 	print("  -t, --transparent  transparent window\n");
 	print("  -p, --pop STR      pop up window\n");
@@ -229,6 +231,11 @@ bool args_parse(MainWindow win, string[] args) {
 		case "--float":
 		case "-f":
 			win.floating = true;
+			break;
+
+		case "--bidi":
+		case "-b":
+			win.bidi = true;
 			break;
 
 		case "--oncursor":
