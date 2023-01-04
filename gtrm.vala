@@ -251,6 +251,7 @@ bool args_parse(MainWindow win, string[] args) {
 			win.transparent = true;
 			win.cursor      = Vte.CursorShape.IBEAM;
 			win.trm_args = {"sh", "-c", args[++i] + ";read"};
+			win.title = args[i].split(" ")[0];
 			break;
 
 		case "--transparent":
@@ -261,6 +262,7 @@ bool args_parse(MainWindow win, string[] args) {
 		case "--sh":
 		case "-s":
 			win.trm_args = {"sh", "-c", args[++i]};
+			win.title = args[i].split(" ")[0];
 			break;
 
 		case "-e":
@@ -269,6 +271,7 @@ bool args_parse(MainWindow win, string[] args) {
 			for (; i < args.length; ++i) {
 				win.trm_args += args[i];
 			}
+			win.title = win.trm_args[0];
 			break;
 
 		default:
